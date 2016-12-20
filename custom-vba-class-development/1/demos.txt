@@ -1,0 +1,229 @@
+' Snippet 1
+Option Explicit
+
+' Error constants
+Private Const conErrInvalidProcCall = 5
+Private Const conErrPastEOF = 62
+
+' File open modes
+Private Const OpenReadOnly = 0
+Private Const OpenReadWrite = 1
+Private Const OpenAppend = 2
+
+' Snippet 2
+Sub TestTextFile()
+
+End Sub
+
+' Snippet 3
+Dim tf As TextFile
+Set tf = New TextFile
+
+' Snippet 4
+Private mstrPath As String
+Private mhFile As Long
+Private mlngOpenMode As Integer
+Private mfIsOpen As Boolean
+Private mstrCurrentLine As String
+
+' Snippet 5
+Public Function FileOpen() As Boolean
+    On Error GoTo HandleError
+    
+    ' Add code here...
+
+ExitProc:
+    Exit Function
+
+HandleError:
+    FileOpen = False
+    Resume ExitProc
+End Function
+
+' Snippet 6
+Public Sub FileClose()
+    ' Add code here...
+End Sub
+
+' Snippet 7
+Public Function ReadNext() As Boolean
+    On Error GoTo HandleError
+    
+    Dim hFile As Long
+    
+    ' Add code here
+    
+ExitProc:
+    Exit Function
+
+HandleError:
+    Select Case Err.Number
+        Case conErrPastEOF
+            ' Just ignore
+        Case Else
+            ReadNext = False
+    End Select
+    Resume ExitProc
+End Function
+
+' Snippet 8
+Public Function Exists() As Boolean
+    ' Return existance of file based on
+    ' a directory search.
+    On Error Resume Next
+    Exists = (Len(Dir$(Me.Path)) > 0)
+    If Err.Number <> 0 Then
+        Exists = False
+    End If
+End Function
+
+' Snippet 9
+Property Get Text() As String
+    Text = mstrCurrentLine
+End Property
+		
+Property Get IsOpen() As Boolean
+    IsOpen = mfIsOpen
+End Property
+
+' Snippet 10
+Property Get Handle() As Long
+    ' Get the OS file handle if a file
+    ' is open
+    If Me.IsOpen Then
+        Handle = mhFile
+    End If
+End Property
+
+' Snippet 11
+
+Property Get EOF() As Boolean
+    If Me.IsOpen Then
+        EOF = VBA.EOF(Me.Handle)
+    End If
+End Property
+
+' Snippet 12
+Property Get Path() As String
+    Path = mstrPath
+End Property
+
+' Snippet 13
+Property Get OpenMode() As Integer
+    ' Retrieve the open mode of the file
+    OpenMode = mlngOpenMode
+End Property
+    
+Property Let OpenMode(ByVal lngMode As Integer)
+    ' Set the open mode of the file only if
+    ' a file is not already open
+    If Not Me.IsOpen Then
+        Select Case lngMode
+            Case OpenReadOnly, OpenReadWrite, OpenAppend
+                mlngOpenMode = lngMode
+            Case Else
+                Err.Raise conErrInvalidProcCall
+        End Select
+    End If
+End Property
+
+' Snippet 15
+tf.Path = "C:\Demos\Test.txt"
+tf.OpenMode = 1
+tf.FileOpen
+
+' Snippet 16
+Set tf.SaveFile = New TextFile
+tf.SaveFile.Path = "C:\Demos\SaveFile.txt"
+tf.SaveFile.FileOpen
+
+' Snippet 17
+Public Enum TextFileOpenMode
+    ' Add code here.
+End Enum
+
+' Snippet 18
+OpenReadOnly
+OpenReadWrite
+OpenAppend
+
+' Snippet 19
+
+' If a file is already open, close it
+If Me.IsOpen Then
+    Me.FileClose
+End If
+
+' Get next available file handle
+mhFile = FreeFile
+
+' Add code here...
+
+' Snippet 20
+' Open file based on file open mode property
+Select Case Me.OpenMode
+    Case OpenReadOnly
+        If Me.AutoCreate Then
+            Open Me.Path For Binary Access Read As mhFile
+        Else
+            Open Me.Path For Input Access Read As mhFile
+        End If
+    Case OpenReadWrite
+        Open Me.Path For Binary Access Read Write As mhFile
+    Case OpenAppend
+        Open Me.Path For Append Access Read Write As mhFile
+    Case Else
+        ' Bad value of OpenMode, throw an error
+        Err.Raise conErrInvalidProcCall
+End Select
+' Add code here...
+
+' Snippet 21
+' Set IsOpen property variable and return value
+mfIsOpen = True
+FileOpen = True
+
+' Snippet 22
+Close Me.Handle
+mfIsOpen = False
+
+' Snippet 23
+If Me.IsOpen Then
+    hFile = Me.Handle
+    If Not VBA.EOF(hFile) Then
+        Line Input #hFile, mstrCurrentLine
+        ReadNext = True
+    End If
+End If
+
+' Snippet 24
+
+' Set default file open mode property
+Me.OpenMode = OpenReadOnly
+
+' Snippet 25
+' If a file is still open then close it
+' before terminating
+If Me.IsOpen Then
+    Me.FileClose
+End If
+
+' Snippet 26
+Sub TestTextFile()
+    Dim tf As TextFile
+    
+    Set tf = New TextFile
+    tf.Path = "C:\Demos\Test.txt"
+    
+    If tf.FileOpen() Then
+        Do While Not tf.EOF
+            tf.ReadNext
+            Debug.Print tf.Text
+        Loop
+        tf.FileClose
+    End If
+    ' Not required in this case.
+    Set tf = Nothing
+End Sub
+
+

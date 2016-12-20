@@ -1,0 +1,252 @@
+' Snippet 1
+Option Explicit
+
+Private mstrID As String
+Private mstrText As String
+
+Public Changed As Boolean
+
+Property Get Length() As Long
+    Length = Len(Text)
+End Property
+
+Property Get ID() As String
+    ID = mstrID
+End Property
+
+Property Get Text() As String
+    Text = mstrText
+End Property
+
+Property Let Text(ByVal strText As String)
+    If mstrText <> strText Then
+        mstrText = strText
+        Me.Changed = True
+    End If
+End Property
+
+Private Sub Class_Initialize()
+    ' Set the object's ID property to a random string
+    mstrID = "Line" & CLng(Rnd * (2 ^ 31))
+End Sub
+
+' Snippet 2
+Sub TestCollection()
+    Dim col As Collection
+    Set col = New Collection
+    ' Insert code here...
+    
+End Sub
+
+' Snippet 3
+Dim li As Line
+Set li = New Line
+li.Text = "Line 1"
+col.Add li
+
+Set li = New Line
+li.Text = "Line 2"
+col.Add li
+
+Set li = New Line
+li.Text = "Line 3"
+col.Add li
+
+' Insert code here...
+
+For Each li In col
+    Debug.Print li.ID & " has text: " & li.Text
+Next li
+
+' Snippet 4
+col.Add 3
+col.Add "Hello"
+
+' Snippet 5
+Option Explicit
+
+' Private collection to store Lines
+Private mcolLines As Collection
+
+' Snippet 6
+    Set mcolLines = New Collection
+	
+' Snippet 7
+Public Sub Add(ByVal strText As String, Optional ByVal varBefore As Variant)
+    Dim theLine As New Line
+    theLine.Text = strText
+    mcolLines.Add theLine, theLine.ID, varBefore
+End Sub
+
+Public Sub Remove(ByVal ID As Variant)
+    mcolLines.Remove ID
+End Sub
+
+Property Get Item(ByVal ID As Variant) As Line
+    Set Item = mcolLines(ID)
+End Property
+
+Property Get Count() As Long
+    Count = mcolLines.Count
+End Property
+
+' Snippet 8
+Sub TestLines()
+    Dim theLines As Lines
+    Dim theLine As Line
+    Dim i As Integer
+    ' Insert code here…
+End Sub
+
+' Snippet 9
+Set theLines = New Lines
+
+theLines.Add "Line 1"
+theLines.Add "Line 2"
+theLines.Add "Line 3"
+theLines.Add "Line 4"
+
+' Insert code here…
+
+' Snippet 10
+For i = 1 To theLines.Count
+    Set theLine = theLines.Item(i)
+    Debug.Print theLine.ID & " = " & theLine.Text
+Next i
+
+' Insert code here...
+
+' Snippet 11
+Public Sub ToUpper()
+    Dim li As Line
+    
+    For Each li In mcolLines
+        li.Text = UCase(li.Text)
+    Next li
+End Sub
+
+Property Let Changed(ByVal fChanged As Boolean)
+    Dim objLine As Line
+    
+    For Each objLine In mcolLines
+        objLine.Changed = fChanged
+    Next
+End Property
+
+Property Get Changed() As Boolean
+    Dim objLine As Line
+
+    For Each objLine In mcolLines
+        If objLine.Changed Then
+            Changed = True
+            Exit For
+        End If
+    Next
+End Property
+
+' Snippet 12
+theLines.Changed = False
+theLines.ToUpper
+
+For i = 1 To theLines.Count
+     Set theLine = theLines.Item(i)
+     Debug.Print theLine.ID & " = " & theLine.Text
+Next i
+Debug.Print "Changed: " & theLines.Changed
+
+' Snippet 13
+Option Explicit
+
+Private mlngNumber As Long
+Private mobjLink As Self
+
+Property Get Number() As Long
+    Number = mlngNumber
+End Property
+
+Property Get Link() As Self
+    Set Link = mobjLink
+End Property
+
+Property Set Link(objLink As Self)
+    Set mobjLink = objLink
+    
+    Debug.Print "From " & _
+     Me.Number & " referencing " & _
+     objLink.Number
+End Property
+
+Private Sub Class_Initialize()
+    mlngNumber = CLng(Timer * 100)
+    Debug.Print "Initializing " & mlngNumber
+End Sub
+
+Private Sub Class_Terminate()
+    Debug.Print "Terminating " & mlngNumber
+End Sub
+
+' Snippet 14
+Sub TestSelf1()
+    Dim objSelf1 As Self
+    Dim objSelf2 As Self
+    
+    Set objSelf1 = New Self
+    Set objSelf2 = New Self
+    
+    Set objSelf2.Link = objSelf1
+    
+    Set objSelf1 = Nothing
+    Set objSelf2 = Nothing
+End Sub
+
+' Snippet 15
+Sub TestSelf2()
+    Dim objSelf1 As Self
+    Dim objSelf2 As Self
+    
+    Set objSelf1 = New Self
+    Set objSelf2 = New Self
+    
+    Set objSelf1.Link = objSelf2
+    Set objSelf2.Link = objSelf1
+    
+    Set objSelf1 = Nothing
+    Set objSelf2 = Nothing
+End Sub
+
+' Snippet 16
+
+Public Sub Cleanup()
+    Set mobjLink = Nothing
+End Sub
+
+' Snippet 17
+Sub TestSelf3()
+
+End Sub
+
+' Snippet 18
+objSelf1.Cleanup
+objSelf2.Cleanup
+
+' Snippet 19
+Dim WithEvents xlApp As Excel.Application
+
+' Snippet 20
+Private Sub UserForm_Initialize()
+    Set xlApp = New Excel.Application
+    xlApp.Visible = True
+End Sub
+
+' Snippet 21
+    lstEvents.AddItem "New Selection: " & _
+     Sh.Name & "(" & Target.Address & ")"
+
+' Snippet 22
+
+lstEvents.AddItem "Attempting to close " & Wb.Name
+If vbNo = MsgBox("Close the workbook?", _
+vbQuestion + vbYesNo, "WithEvents Test") Then
+    Cancel = True
+End If
+
